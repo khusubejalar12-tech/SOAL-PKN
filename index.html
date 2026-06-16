@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT PKN SD — Ujian Online</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-900: #0F2952;
+    --blue-800: #1A3D7A;
+    --blue-600: #2563EB;
+    --blue-500: #3B82F6;
+    --blue-400: #60A5FA;
+    --blue-100: #DBEAFE;
+    --blue-50:  #EFF6FF;
+    --white:    #FFFFFF;
+    --gray-50:  #F8FAFC;
+    --gray-100: #F1F5F9;
+    --gray-200: #E2E8F0;
+    --gray-400: #94A3B8;
+    --gray-600: #475569;
+    --gray-800: #1E293B;
+    --green:    #16A34A;
+    --green-bg: #DCFCE7;
+    --red:      #DC2626;
+    --red-bg:   #FEE2E2;
+    --yellow:   #D97706;
+    --yellow-bg:#FEF3C7;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 1px 4px rgba(15,41,82,.07);
+    --shadow-md: 0 4px 16px rgba(15,41,82,.12);
+    --shadow-lg: 0 12px 40px rgba(15,41,82,.18);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--blue-900) 0%, #1e4080 40%, #1a5276 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* ──────────── SCREENS ──────────── */
+  .screen { display: none; width: 100%; max-width: 860px; }
+  .screen.active { display: block; animation: fadeUp .4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ──────────── CARD ──────────── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 100%);
+    padding: 32px 36px 28px;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header::after {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+  }
+  .card-header::before {
+    content: '';
+    position: absolute;
+    right: 60px; bottom: -60px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 12px;
+  }
+
+  .header-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 800;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-sub {
+    margin-top: 6px;
+    font-size: 14px;
+    color: rgba(255,255,255,.7);
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-body { padding: 32px 36px; }
+
+  /* ──────────── LOGIN SCREEN ──────────── */
+  .login-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .info-box {
+    background: var(--blue-50);
+    border: 1px solid var(--blue-100);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-align: center;
+  }
+  .info-box .ib-val {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 24px; font-weight: 800;
+    color: var(--blue-600);
+  }
+  .info-box .ib-lbl {
+    font-size: 12px; color: var(--gray-600);
+    margin-top: 2px;
+  }
+
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block;
+    font-size: 13px; font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--gray-800);
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  .form-group input:focus {
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+  }
+
+  /* ──────────── BUTTONS ──────────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 24px;
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue-600), var(--blue-800));
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(37,99,235,.35);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.45); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    border: 1.5px solid var(--gray-200);
+  }
+  .btn-secondary:hover { background: var(--gray-200); }
+  .btn-danger {
+    background: linear-gradient(135deg, #DC2626, #B91C1C);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(220,38,38,.3);
+  }
+  .btn-danger:hover { transform: translateY(-1px); }
+  .btn-full { width: 100%; }
+  .btn-lg { padding: 15px 28px; font-size: 15px; }
+
+  /* ──────────── EXAM SCREEN ──────────── */
+  .exam-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    flex-wrap: wrap; gap: 10px;
+  }
+  .participant-info {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--blue-600), var(--blue-800));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white); font-weight: 700; font-size: 14px;
+  }
+  .participant-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+  .participant-sub  { font-size: 11px; color: var(--gray-400); }
+
+  .timer-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--blue-900);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px; font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .timer-box.warning { background: var(--yellow); }
+  .timer-box.danger  { background: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.7} }
+
+  .exam-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+    min-height: 500px;
+  }
+
+  /* Nav panel */
+  .nav-panel {
+    background: var(--gray-50);
+    border-right: 1px solid var(--gray-200);
+    padding: 20px 16px;
+    overflow-y: auto;
+    max-height: 620px;
+  }
+  .nav-panel-title {
+    font-size: 11px; font-weight: 700; color: var(--gray-400);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .nav-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .nav-btn {
+    width: 100%; aspect-ratio: 1;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 6px;
+    background: var(--white);
+    font-size: 11px; font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all .15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-btn:hover { border-color: var(--blue-400); color: var(--blue-600); }
+  .nav-btn.answered { background: var(--blue-600); border-color: var(--blue-600); color: var(--white); }
+  .nav-btn.current  { border-color: var(--blue-500); box-shadow: 0 0 0 2px rgba(59,130,246,.25); color: var(--blue-600); font-weight: 700; }
+  .nav-btn.current.answered { background: var(--blue-800); border-color: var(--blue-800); color: var(--white); }
+
+  .nav-legend { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--gray-600); }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* Question area */
+  .question-area {
+    padding: 28px 32px;
+    display: flex; flex-direction: column;
+  }
+
+  .q-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .q-counter {
+    font-size: 12px; font-weight: 600; color: var(--blue-600);
+    background: var(--blue-50); padding: 4px 12px;
+    border-radius: 99px;
+  }
+  .q-progress {
+    flex: 1; margin: 0 16px;
+    height: 6px; background: var(--gray-200); border-radius: 99px;
+    overflow: hidden;
+  }
+  .q-progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--blue-500), var(--blue-600));
+    border-radius: 99px; transition: width .4s ease;
+  }
+  .q-answered-count { font-size: 12px; color: var(--gray-400); }
+
+  .q-text {
+    font-size: 15px; line-height: 1.7;
+    color: var(--gray-800); font-weight: 500;
+    margin-bottom: 24px;
+    flex: 1;
+  }
+  .q-number {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800; color: var(--blue-600);
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-label {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all .18s;
+    background: var(--white);
+  }
+  .option-label:hover {
+    border-color: var(--blue-400);
+    background: var(--blue-50);
+  }
+  .option-label input[type=radio] { display: none; }
+  .option-label.selected {
+    border-color: var(--blue-600);
+    background: var(--blue-50);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+  }
+  .option-key {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border: 2px solid var(--gray-300);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--gray-500);
+    transition: all .18s;
+    margin-top: 1px;
+  }
+  .option-label.selected .option-key {
+    background: var(--blue-600); border-color: var(--blue-600); color: var(--white);
+  }
+  .option-text { font-size: 14px; line-height: 1.6; color: var(--gray-700); }
+
+  .q-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 28px; gap: 12px;
+  }
+
+  /* ──────────── RESULT SCREEN ──────────── */
+  .result-header {
+    text-align: center;
+    padding: 40px 36px 28px;
+  }
+  .score-circle {
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    background: conic-gradient(var(--blue-600) calc(var(--pct) * 1%), var(--gray-200) 0);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .score-circle::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    background: var(--white);
+    border-radius: 50%;
+  }
+  .score-val {
+    position: relative; z-index: 1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 30px; font-weight: 800;
+    color: var(--blue-900);
+  }
+  .result-name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px; font-weight: 800; color: var(--gray-800);
+  }
+  .result-sub { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
+
+  .result-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; margin: 24px 0;
+  }
+  .result-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 20px 16px; text-align: center;
+  }
+  .result-card.green { background: var(--green-bg); border-color: #86EFAC; }
+  .result-card.red   { background: var(--red-bg); border-color: #FCA5A5; }
+  .result-card.blue  { background: var(--blue-50); border-color: var(--blue-100); }
+  .result-card .rv {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 28px; font-weight: 800;
+  }
+  .result-card.green .rv { color: var(--green); }
+  .result-card.red   .rv { color: var(--red); }
+  .result-card.blue  .rv { color: var(--blue-600); }
+  .result-card .rl { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
+
+  .result-status {
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    font-weight: 600; font-size: 15px;
+    margin-bottom: 20px;
+  }
+  .result-status.lulus { background: var(--green-bg); color: var(--green); }
+  .result-status.gagal { background: var(--red-bg); color: var(--red); }
+
+  .answer-review { margin-top: 24px; }
+  .review-title {
+    font-size: 13px; font-weight: 700; color: var(--gray-600);
+    text-transform: uppercase; letter-spacing: .8px;
+    margin-bottom: 14px;
+  }
+  .review-item {
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    margin-bottom: 8px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .review-item.correct { border-color: #86EFAC; background: var(--green-bg); }
+  .review-item.wrong   { border-color: #FCA5A5; background: var(--red-bg); }
+  .review-item.skipped { border-color: var(--gray-200); background: var(--gray-50); }
+  .ri-num { font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .review-item.correct .ri-num { color: var(--green); }
+  .review-item.wrong   .ri-num { color: var(--red); }
+  .review-item.skipped .ri-num { color: var(--gray-400); }
+  .ri-q { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+  .ri-ans { font-size: 12px; margin-top: 4px; color: var(--gray-500); }
+
+  /* ──────────── MODAL ──────────── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from{opacity:0}to{opacity:1} }
+  .modal {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 36px; max-width: 420px; width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: scaleIn .25s ease;
+  }
+  @keyframes scaleIn { from{transform:scale(.9)}to{transform:scale(1)} }
+  .modal-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+  .modal-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px; font-weight: 800; color: var(--gray-800);
+    text-align: center; margin-bottom: 8px;
+  }
+  .modal-body { font-size: 14px; color: var(--gray-600); text-align: center; margin-bottom: 24px; line-height: 1.6; }
+  .modal-actions { display: flex; gap: 12px; }
+
+  /* ──────────── RESPONSIVE ──────────── */
+  @media(max-width: 680px) {
+    .card-body, .card-header { padding: 20px; }
+    .exam-layout { grid-template-columns: 1fr; }
+    .nav-panel { max-height: 180px; border-right: none; border-bottom: 1px solid var(--gray-200); }
+    .nav-grid { grid-template-columns: repeat(8, 1fr); }
+    .question-area { padding: 20px; }
+    .login-grid { grid-template-columns: 1fr 1fr; }
+    .result-grid { grid-template-columns: 1fr; }
+    .q-actions { flex-wrap: wrap; }
+    .exam-topbar { flex-direction: column; align-items: flex-start; }
+  }
+  @media(max-width: 400px){
+    .nav-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+
+  /* scrollbar */
+  .nav-panel::-webkit-scrollbar { width: 4px; }
+  .nav-panel::-webkit-scrollbar-track { background: transparent; }
+  .nav-panel::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ LOGIN SCREEN ════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="card">
+    <div class="card-header">
+      <div class="badge">CBT Online · SPGK4203</div>
+      <h1 class="header-title">Ujian Pendidikan<br>Kewarganegaraan SD</h1>
+      <p class="header-sub">Masukkan data peserta untuk memulai ujian</p>
+    </div>
+    <div class="card-body">
+      <div class="login-grid">
+        <div class="info-box">
+          <div class="ib-val">50</div>
+          <div class="ib-lbl">Total Soal</div>
+        </div>
+        <div class="info-box">
+          <div class="ib-val">120'</div>
+          <div class="ib-lbl">Waktu Ujian</div>
+        </div>
+        <div class="info-box">
+          <div class="ib-val">Urut</div>
+          <div class="ib-lbl">Soal 1–50</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inp-name">Nama Lengkap Peserta *</label>
+        <input type="text" id="inp-name" placeholder="Contoh: Budi Santoso" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="inp-nim">NIM / Nomor Peserta (opsional)</label>
+        <input type="text" id="inp-nim" placeholder="Contoh: 859XXXXXXX" autocomplete="off">
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="startExam()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 3l14 9L5 21V3z"/></svg>
+        Mulai Ujian
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ EXAM SCREEN ════════════════ -->
+<div id="screen-exam" class="screen">
+  <div class="card">
+    <!-- Top bar -->
+    <div class="exam-topbar">
+      <div class="participant-info">
+        <div class="avatar" id="av-init">?</div>
+        <div>
+          <div class="participant-name" id="av-name">—</div>
+          <div class="participant-sub">SPGK4203 · PKN SD</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="timer-box" id="timer-display">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span id="timer-text">120:00</span>
+        </div>
+        <button class="btn btn-danger" onclick="confirmFinish()">Selesai Ujian</button>
+      </div>
+    </div>
+
+    <!-- Body: nav + question -->
+    <div class="exam-layout">
+      <!-- Nav panel -->
+      <div class="nav-panel">
+        <div class="nav-panel-title">Navigasi Soal</div>
+        <div class="nav-grid" id="nav-grid"></div>
+        <div class="nav-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--blue-600)"></div> Sudah dijawab
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--white);border:1.5px solid var(--gray-300)"></div> Belum dijawab
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:10px;background:var(--blue-50);border-radius:8px;">
+          <div style="font-size:11px;color:var(--gray-600);">Dijawab: <strong id="answered-count" style="color:var(--blue-600)">0</strong> / 50</div>
+        </div>
+      </div>
+
+      <!-- Question area -->
+      <div class="question-area">
+        <div class="q-meta">
+          <span class="q-counter" id="q-counter">Soal 1 / 50</span>
+          <div class="q-progress">
+            <div class="q-progress-fill" id="q-progress-fill" style="width:2%"></div>
+          </div>
+          <span class="q-answered-count" id="q-answered-count">0 dijawab</span>
+        </div>
+
+        <div class="q-text" id="q-text">Memuat soal...</div>
+
+        <div class="options" id="options-container"></div>
+
+        <div class="q-actions">
+          <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">
+            Berikutnya
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ RESULT SCREEN ════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="card">
+    <div class="card-header">
+      <div class="badge">Hasil Ujian</div>
+      <h1 class="header-title">SPGK4203 — PKN SD</h1>
+      <p class="header-sub" id="res-date">—</p>
+    </div>
+    <div class="card-body">
+      <div class="result-header" style="padding:0 0 20px;">
+        <div class="score-circle" id="score-circle" style="--pct:0">
+          <div class="score-val" id="res-score-val">0</div>
+        </div>
+        <div class="result-name" id="res-name">—</div>
+        <div class="result-sub" id="res-nim">—</div>
+      </div>
+
+      <div class="result-status" id="res-status">—</div>
+
+      <div class="result-grid">
+        <div class="result-card green">
+          <div class="rv" id="res-correct">0</div>
+          <div class="rl">Jawaban Benar</div>
+        </div>
+        <div class="result-card red">
+          <div class="rv" id="res-wrong">0</div>
+          <div class="rl">Jawaban Salah</div>
+        </div>
+        <div class="result-card blue">
+          <div class="rv" id="res-skipped">0</div>
+          <div class="rl">Tidak Dijawab</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:13px;color:var(--gray-600);margin-bottom:6px;">Persentase Keberhasilan</div>
+        <div style="height:10px;background:var(--gray-200);border-radius:99px;overflow:hidden;">
+          <div id="pct-bar" style="height:100%;background:linear-gradient(90deg,var(--blue-500),var(--blue-600));border-radius:99px;transition:width 1s ease;width:0%"></div>
+        </div>
+        <div style="font-size:13px;color:var(--blue-600);font-weight:700;margin-top:6px;" id="pct-text">0%</div>
+      </div>
+
+      <button class="btn btn-primary btn-full" style="margin-bottom:12px;" onclick="retakeExam()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+        Ulangi Ujian
+      </button>
+
+      <div class="answer-review">
+        <div class="review-title">Pembahasan Jawaban</div>
+        <div id="review-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ MODAL CONFIRM ════════════════ -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">Selesaikan Ujian?</div>
+    <div class="modal-body" id="modal-body-text">
+      Apakah Anda yakin ingin mengakhiri ujian sekarang? Pastikan semua soal telah dijawab.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal()">Batal</button>
+      <button class="btn btn-danger" style="flex:1" onclick="finishExam()">Ya, Selesai</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// KUNCI JAWABAN — Isi sendiri jika berbeda
+// Format: { nomor_soal_asli: 'A'/'B'/'C'/'D' }
+// ══════════════════════════════════════════
+const KUNCI_JAWABAN = {
+  1:  'D',  // daftar cocok
+  2:  'D',  // evaluating the test (bukan langkah Gronlund)
+  3:  'B',  // memberi pengalaman langsung
+  4:  'B',  // conventional (ingin disebut anak baik)
+  5:  'D',  // hukum nasional diberlakukan berbeda-beda (kecuali)
+  6:  'A',  // Pasal 1 ayat 1 → negara kesatuan berbentuk republik
+  7:  'A',  // peradilan agama
+  8:  'B',  // Sulawesi Utara
+  9:  'C',  // nenek moyang berdatangan... (sosiologis & kultural)
+  10: 'B',  // kejaksaan
+  11: 'B',  // hukum dan masyarakat
+  12: 'A',  // fragmented (bukan model terpadu yang sering digunakan)
+  13: 'B',  // portofolio
+  14: 'C',  // Pancasila + Kewarganegaraan
+  15: 'D',  // Aru (bukan Weddoid)
+  16: 'D',  // kemampuan profesional guru
+  17: 'D',  // tidak ada hak membuat UU (kecuali)
+  18: 'A',  // integrated
+  19: 'C',  // HANKAMNAS (bukan upaya mewujudkan ketahanan nasional)
+  20: 'B',  // Drs. Moh. Hatta
+  21: 'A',  // memberikan peranan kepada akal
+  22: 'B',  // budaya dan adat istiadat
+  23: 'C',  // rela berkorban membela negara
+  24: 'A',  // gemar melakukan kegiatan kemanusiaan
+  25: 'C',  // Contemporary doctrine of democracy
+  26: 'B',  // penyelesaian perkara melalui konsultasi, negosiasi...
+  27: 'C',  // keinginan hidup bersama dengan perasaan setia kawan
+  28: 'D',  // L. Stoddard
+  29: 'D',  // bidang militer (kecuali)
+  30: 'B',  // pidana penjara (Pasal 362)
+  31: 'A',  // gejala pergaulan hidup yang bergolak terus menerus
+  32: 'A',  // Gandal dan Finn
+  33: 'A',  // pertemuan kelas berita baru
+  34: 'A',  // norma kesopanan (Kansil)
+  35: 'B',  // kelompok portofolio dua
+  36: 'A',  // penalaran moral
+  37: 'C',  // aturan diterima sebagai perwujudan dari kesepakatan
+  38: 'A',  // persiapan, pelaksanaan, dan refleksi
+  39: 'A',  // proses psikologis untuk memberikan penilaian...
+  40: 'B',  // sense of curiosity
+  41: 'B',  // membentuk individu liberalis (kecuali)
+  42: 'A',  // nilai (value education)
+  43: 'D',  // Pembukaan UUD 1945 alinea ke-3
+  44: 'B',  // obyektif
+  45: 'C',  // kelembagaan
+  46: 'A',  // aturan-aturan yang berlaku
+  47: 'B',  // mampu memberi contoh dan menjadi contoh
+  48: 'A',  // tematik
+  49: 'B',  // we the people project citizen
+  50: 'A',  // tidak punya minat atau perhatian (apatisme)
+};
+
+// ══════════════════════════════════════════
+// DATA SOAL (1–50 dari PDF SPGK4203)
+// ══════════════════════════════════════════
+const SOAL_BANK = [
+  {
+    id: 1,
+    text: "Alat penilaian pengamatan yang dapat digunakan untuk menilai hasil belajar afektif dan psikomotorik dari siswa, diantaranya adalah ....",
+    options: { A: "kuesioner", B: "inventories", C: "wawancara", D: "daftar cocok" }
+  },
+  {
+    id: 2,
+    text: "Berikut ini adalah langkah-langkah dasar dalam menyusun classroom test seperti yang dikemukakan oleh Gronlund, kecuali ....",
+    options: { A: "building a table of specification", B: "selecting appropriate item test", C: "assembling the test", D: "evaluating the test" }
+  },
+  {
+    id: 3,
+    text: "Yang merupakan salah satu ciri pembelajaran terpadu pada mata pelajaran PKn adalah ....",
+    options: { A: "berpusat pada guru", B: "memberi pengalaman langsung kepada anak", C: "bersifat kaku", D: "hasil pembelajaran tidak dapat berkembang sesuai dengan kebutuhan" }
+  },
+  {
+    id: 4,
+    text: "Anak yang dalam melakukan tindakan moralnya didasarkan pada perasaan ingin disebut sebagai anak baik atau anak manis bila dikaitkan dengan tahap perkembangan moral menurut L. Kohlberg maka anak tersebut berada pada tahap....",
+    options: { A: "preconventional", B: "conventional", C: "posconventional", D: "sensorimotorik" }
+  },
+  {
+    id: 5,
+    text: "Menurut pandangan dari Prof. Hayati Soedibyo, untuk menanggulangi keanekaragaman perlu diperhatikan hal-hal sebagai berikut, kecuali....",
+    options: {
+      A: "bahwa Indonesia merupakan kepulauan yang luas sekali",
+      B: "wilayah yang luas itu terdiri dari ribuan dengan jumlah penduduk yang beraneka ragam",
+      C: "keanekaragaman budaya dan bahasa setempat, memiliki dasar budaya dan bahasa yang sama",
+      D: "hukum nasional harus diberlakukan secara berbeda-beda menyesuaikan kondisi budayanya"
+    }
+  },
+  {
+    id: 6,
+    text: "Pasal 1 ayat 1 UUD 1945 membahas tentang....",
+    options: {
+      A: '"Negara Indonesia ialah negara kesatuan yang berbentuk republik"',
+      B: '"Negara menghormati dan memelihara bahasa daerah sebagai kekayaan budaya nasional"',
+      C: '"Bendera negara Indonesia ialah Sang Merah Putih"',
+      D: '"Bahasa Negara ialah Bahasa Indonesia"'
+    }
+  },
+  {
+    id: 7,
+    text: "Pengadilan yang bertugas dan berwenang memeriksa perkara di tingkat pertama antara orang-orang yang beragama Islam di bidang perkawinan, waris, wasiat, hibah, wakaf dan shodaqoh berdasarkan hukum Islam, adalah....",
+    options: { A: "peradilan agama", B: "peradilan militer", C: "peradilan tata usaha negara", D: "peradilan negeri" }
+  },
+  {
+    id: 8,
+    text: "Tari Maengket berasal dari daerah....",
+    options: { A: "Sulawesi Selatan", B: "Sulawesi Utara", C: "Sumatra Barat", D: "Maluku" }
+  },
+  {
+    id: 9,
+    text: "Latar belakang kemajemukan bangsa Indonesia ditinjau dari aspek sosiologis dan kultural, adalah....",
+    options: {
+      A: "dampak teknologi manusia yang berkembang selama berabad-abad menghasilkan peradaban yang berbeda",
+      B: "kondisi kepulauan di Indonesia yang berbeda-beda, seperti perbedaan iklim dan curah hujan",
+      C: "nenek moyang bangsa Indonesia berdatangan ke pulau yang ada di Indonesia dalam waktu yang cukup lama dan berbeda-beda, dalam perjalanannya mereka berupaya mempertahankan diri dan menyesuaikan dengan kondisi yang ada",
+      D: "munculnya sistem pemerintahan kerajaan di setiap daerah"
+    }
+  },
+  {
+    id: 10,
+    text: "Pejabat yang diberi wewenang untuk bertindak sebagai penuntut umum serta melaksanakan keputusan pengadilan yang telah memperoleh kekuatan hukum tetap, yaitu....",
+    options: { A: "kepolisian", B: "kejaksaan", C: "kehakiman", D: "penasihat hukum" }
+  },
+  {
+    id: 11,
+    text: "PKn merupakan pendidikan yang memungkinkan siswa mengetahui apa yang menjadi hak dan kewajibannya, adalah peran PKn sebagai pendidikan....",
+    options: { A: "kewarganegaraan", B: "hukum dan masyarakat", C: "politik", D: "nilai dan moral Pancasila" }
+  },
+  {
+    id: 12,
+    text: "Di bawah ini merupakan model pembelajaran terpadu yang sering digunakan di SD, kecuali....",
+    options: { A: "fragmented", B: "webbed", C: "connected", D: "integrated" }
+  },
+  {
+    id: 13,
+    text: "Kumpulan informasi yang tersusun dengan baik yang menggambarkan rencana kelas berkenaan dengan suatu isu kebijakan publik yang telah diputuskan untuk dikaji, dinamakan....",
+    options: { A: "kliping", B: "portofolio", C: "album", D: "laporan karya ilmiah" }
+  },
+  {
+    id: 14,
+    text: "Mata pelajaran PPKn menurut versi kurikulum Tahun 1994 adalah gabungan antara bahan kajian ....",
+    options: {
+      A: "Pendidikan Pancasila dan Bahasa Indonesia",
+      B: "Pendidikan Pancasila dan Pendidikan Agama",
+      C: "Pendidikan Pancasila dan Pendidikan Kewarganegaraan",
+      D: "Bahasa Indonesia dan Pendidikan Kewarganegaraan"
+    }
+  },
+  {
+    id: 15,
+    text: "Penduduk Indonesia dari golongan Weddoid terdapat di daerah, kecuali....",
+    options: { A: "Sakai", B: "Mentawai", C: "Enggano dan Tomuna", D: "Aru" }
+  },
+  {
+    id: 16,
+    text: "Yang menjadi tantangan dalam mengimplementasikan konsep pembelajaran terpadu di SD ....",
+    options: { A: "kurikulum yang fleksibel", B: "jam pelajaran yang terbatas", C: "buku pelajaran yang tidak memadai", D: "kemampuan profesional guru" }
+  },
+  {
+    id: 17,
+    text: "Pasal UUD 1945, mengandung pernyataan tentang HAM, kecuali....",
+    options: {
+      A: "segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan",
+      B: "tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak",
+      C: "setiap warga negara berhak dan wajib ikut serta dalam upaya pembelaan negara",
+      D: "setiap warga negara berhak atas pembuatan undang-undang atau peraturan yang akan diberlakukan"
+    }
+  },
+  {
+    id: 18,
+    text: "Pembelajaran tematik merupakan aplikasi pendekatan pembelajaran....",
+    options: { A: "integrated", B: "connected", C: "contextual", D: "fragmented" }
+  },
+  {
+    id: 19,
+    text: "Upaya-upaya yang dilakukan dalam mewujudkan konsep ketahanan nasional, kecuali....",
+    options: {
+      A: "tetap memungkinkan berjalannya pembangunan nasional yang selalu menuju ke tujuan yang ingin dicapai",
+      B: "mempertahankan kemampuan dan ketangguhan suatu bangsa",
+      C: "mempertahankan HANKAMNAS sebagai upaya rakyat semesta",
+      D: "tetap mewujudkan kepulauan nusantara sebagai satu kesatuan pertahanan dan keamanan"
+    }
+  },
+  {
+    id: 20,
+    text: "Meskipun kita menganut paham kekeluargaan, namun hak-hak warga negara tetap perlu dicantumkan dalam UUD 1945 agar tidak melahirkan suatu negara kekuasaan, pendapat ini dikemukakan oleh....",
+    options: { A: "Ir. Soekarno", B: "Drs. Moh. Hatta", C: "Prof. Soepomo", D: "Ir. Muh Yamin" }
+  },
+  {
+    id: 21,
+    text: "Pendekatan yang bertujuan menggugah perasaan dan emosi siswa dalam memahami, menghayati dan meyakini nilai, sedangkan pendekatan rasional bertujuan ....",
+    options: {
+      A: "memberikan peranan kepada akal dalam memahami dan menerima kebenaran nilai tersebut",
+      B: "membekali siswa dengan pengetahuan dan keterampilan",
+      C: "mengembangkan sikap hormati-menghormati",
+      D: "mengakui persamaan hak dan derajat"
+    }
+  },
+  {
+    id: 22,
+    text: "Keanekaragaman budaya merupakan kekayaan bangsa yang harus dipelihara, merupakan nilai cinta tanah air ditinjau dari aspek tingkah laku yaitu aspek....",
+    options: { A: "sosial", B: "budaya dan adat istiadat", C: "hankamnas", D: "politik" }
+  },
+  {
+    id: 23,
+    text: "Apabila negara dalam ancaman bahaya, kesadaran warga negara terhadap negara adalah....",
+    options: {
+      A: "lebih baik menyerah sebelum jatuh korban yang banyak",
+      B: "meminta PBB mengadakan perundingan",
+      C: "rela berkorban membela negara sampai titik darah penghabisan",
+      D: "mencari perlindungan kepada negara-negara besar"
+    }
+  },
+  {
+    id: 24,
+    text: "Rutin mendonorkan darah, perbuatan tersebut sesuai dengan sila kemanusiaan yang adil dan beradab terutama pada butir ....",
+    options: {
+      A: "gemar melakukan kegiatan kemanusiaan",
+      B: "menjunjung tinggi nilai-nilai kemanusiaan",
+      C: "saling mencintai sesama manusia",
+      D: "tenggang rasa dan tepa seliro"
+    }
+  },
+  {
+    id: 25,
+    text: "Pandangan Torres bahwa demokrasi merupakan suatu landasan pelaksanaan kekuasaan tertinggi di tangan rakyat disebut....",
+    options: {
+      A: "Aristotelian theory",
+      B: "Medieval theory",
+      C: "Contemporary doctrine of democracy",
+      D: "Actually doctrine of democracy"
+    }
+  },
+  {
+    id: 26,
+    text: "Untuk melaksanakan fungsi Komnas HAM dalam mediasi, menurut Pasal 89 Komnas HAM bertugas dan berwenang melakukan....",
+    options: {
+      A: "pengamatan pelaksanaan HAM dan penyusunan laporan hasil pengamatan tersebut",
+      B: "penyelesaian perkara melalui cara konsultasi, negosiasi, mediasi, konsolidasi, dan penilaian ahli",
+      C: "pemberian saran kepada para pihak untuk menyelesaikan sengketa melalui pengadilan",
+      D: "penyampaian rekomendasi atas suatu kasus pelanggaran HAM kepada Pemerintah"
+    }
+  },
+  {
+    id: 27,
+    text: "Ernest Renant berpendapat bahwa bangsa terbentuk karena....",
+    options: {
+      A: "keinginan untuk menonjol di antara bangsa-bangsa lain",
+      B: "sekelompok manusia yang mempunyai persamaan karakter",
+      C: "adanya keinginan untuk hidup bersama dengan perasaan setia kawan",
+      D: "adanya hasrat bersatu untuk kesatuan antara manusia dan tempat tinggal"
+    }
+  },
+  {
+    id: 28,
+    text: '"Nasionalisme adalah suatu kepercayaan yang dimiliki oleh sebagian besar individu di mana mereka menyatakan rasa kebangsaan sebagai perasaan memiliki secara bersama di dalam suatu bangsa", merupakan pandangan dari...',
+    options: { A: "Joseph Ernest Renant", B: "Otto Bauar", C: "Louis Snyder", D: "L. Stoddard" }
+  },
+  {
+    id: 29,
+    text: "Menurut Lukman Soetrisno, suatu pembangunan telah melaksanakan HAM apabila menunjukkan adanya ciri-ciri sebagai berikut, kecuali....",
+    options: {
+      A: "dalam bidang politik berupa kemauan mengakui pluralisme pendapat",
+      B: "dalam bidang sosial berupa perlakuan yang sama oleh hukum antara wong cilik dan priyayi",
+      C: "dalam bidang ekonomi dalam, yaitu dengan tidak adanya monopoli",
+      D: "dalam bidang militer, bahwa rakyat harus tunduk pada kekuatan militer negara"
+    }
+  },
+  {
+    id: 30,
+    text: "Pasal 362 KUHP menyatakan bahwa, barang siapa mengambil sesuatu seluruhnya atau sebagian kepunyaan orang lain dengan maksud untuk dimiliki secara melawan hukum diancam karena pencurian dengan....",
+    options: { A: "pidana penjara atau denda", B: "pidana penjara", C: "denda", D: "perampasan dan denda" }
+  },
+  {
+    id: 31,
+    text: "Menurut Dr. Mr. Kirch, bahwa hukum adalah....",
+    options: {
+      A: "suatu gejala pergaulan hidup yang bergolak terus menerus dalam keadaan bentur membentur tanpa henti dengan gejala lainnya",
+      B: "sulit untuk membuat definisi tentang hukum yang memuaskan masyarakat",
+      C: "pikiran/anggapan orang tentang adil dan tidak adil",
+      D: "peraturan tentang perbuatan moral yang menjamin keadilan"
+    }
+  },
+  {
+    id: 32,
+    text: "Pengetahuan, skill, perilaku warga negara yang demokratis tidak akan terjadi dengan sendirinya, tetapi harus diajarkan kepada generasi penerus merupakan pandangan dari....",
+    options: { A: "Gandal dan Finn", B: "Sumantri", C: "Ahmad Sanusi", D: "Thomas Jefferson" }
+  },
+  {
+    id: 33,
+    text: "Strategi pengembangan sikap demokratis melalui pertemuan kelas guna membahas berita aktual yang ada di media massa merupakan strategi....",
+    options: { A: "pertemuan kelas berita baru", B: "cambuk bersiklus", C: "waktu untuk penghargaan", D: "pertemuan perumusan tujuan" }
+  },
+  {
+    id: 34,
+    text: "Menurut Kansil, peraturan hidup yang timbul dari pergaulan segolongan manusia dan ditaati sebagai pedoman tingkah laku terhadap manusia di sekitarnya, merupakan norma....",
+    options: { A: "kesopanan", B: "kesusilaan", C: "adat", D: "hukum" }
+  },
+  {
+    id: 35,
+    text: "Kelompok portofolio yang mengembangkan kebijakan publik yang akan didukung oleh seluruh kelas, adalah....",
+    options: { A: "kelompok portofolio satu", B: "kelompok portofolio dua", C: "kelompok portofolio tiga", D: "kelompok portofolio empat" }
+  },
+  {
+    id: 36,
+    text: "Pendidikan nilai moral berpijak pada teori Piaget dan Kohlberg yang menitik beratkan pada....",
+    options: { A: "penalaran moral", B: "perilaku moral", C: "sikap moral", D: "berpikir kritis" }
+  },
+  {
+    id: 37,
+    text: "Menurut Piaget, tahapan pada domain pelaksanaan aturan pada usia 10–12 tahun akan berperilaku, yaitu....",
+    options: {
+      A: "aturan dilakukan sebagai hal yang hanya bersifat motorik",
+      B: "aturan dilakukan sebagai perilaku yang lebih berorientasi pada diri sendiri",
+      C: "pada usia ini aturan diterima sebagai perwujudan dari kesepakatan",
+      D: "aturan diterima sebagai ketentuan yang sudah dihimpun"
+    }
+  },
+  {
+    id: 38,
+    text: "Tahap-tahap penyajian portofolio, meliputi....",
+    options: {
+      A: "persiapan, pelaksanaan, dan refleksi",
+      B: "pembukaan, pelaksanaan, dan penutupan",
+      C: "mukadimah, kegiatan inti, dan kegiatan penutup",
+      D: "pembukaan, kegiatan inti, dan refleksi"
+    }
+  },
+  {
+    id: 39,
+    text: "Pembelajaran nilai dan moral dalam PKn dituntut harus berpikir kritis, artinya ....",
+    options: {
+      A: "proses psikologis untuk memberikan penilaian terhadap suatu objek atau fenomena dengan informasi yang akurat dan otentik",
+      B: "proses psikologis untuk memahami sesuatu objek dengan logika",
+      C: "proses psikologis untuk menghasilkan suatu cara atau proses baru",
+      D: "proses psikologis untuk mampu mempengaruhi pikiran orang lain"
+    }
+  },
+  {
+    id: 40,
+    text: "Potensi dasar mental manusia yang dapat dikembangkan menurut Nursid, salah satunya adalah dorongan ingin tahu yang sering disebut dengan istilah....",
+    options: { A: "sense of interest", B: "sense of curiosity", C: "sense of reality", D: "sense of inquiry" }
+  },
+  {
+    id: 41,
+    text: "Setiap warga negara mampu mencari serta menggunakan informasi maka akan memperoleh kemanfaatan, kecuali....",
+    options: {
+      A: "Memperluas wawasan pemikirannya",
+      B: "Membentuk individu yang liberalis tanpa tergantung pada orang lain dan masyarakat sekitarnya",
+      C: "Meningkatkan keterampilan mengambil keputusan (decision making)",
+      D: "Mendorong karakter warga negara yang cerdas, bertanggung jawab, dan berpartisipasi"
+    }
+  },
+  {
+    id: 42,
+    text: 'Secara konseptual "value education" berarti pendidikan ....',
+    options: { A: "nilai", B: "moral", C: "etis", D: "pancasila" }
+  },
+  {
+    id: 43,
+    text: "Keberhasilan meraih kemerdekaan bangsa Indonesia sebagai rahmat Allah ditegaskan dalam....",
+    options: {
+      A: "Pasal 29 (1) UUD 1945",
+      B: "Sila 1 Pancasila",
+      C: "Pasal 29 (2) UUD 1945",
+      D: "Pembukaan UUD 1945 alinea ke-3"
+    }
+  },
+  {
+    id: 44,
+    text: "Beberapa prinsip penilaian yang harus diketahui oleh setiap pendidik untuk menghasilkan penilaian yang adil antara lain adalah ....",
+    options: { A: "subjektif", B: "obyektif", C: "positif", D: "negatif" }
+  },
+  {
+    id: 45,
+    text: "Sistem tata kehidupan bernegara yang mengutamakan pola hubungan antara pemerintah dan yang diperintah adalah sistem ....",
+    options: { A: "ideologis", B: "personal", C: "kelembagaan", D: "kewilayahan" }
+  },
+  {
+    id: 46,
+    text: "Sebagai warga negara dalam melaksanakan tanggung jawab harus memperhatikan....",
+    options: {
+      A: "aturan-aturan yang berlaku",
+      B: "kepentingan pribadi",
+      C: "kepentingan golongan tertentu",
+      D: "keuntungan dan kerugian yang akan diperoleh"
+    }
+  },
+  {
+    id: 47,
+    text: "Tuntutan pedagogis memerlukan persiapan mental, profesionalitas, dan hubungan sosial guru dengan murid yang kohesif. Untuk itu, guru seyogianya....",
+    options: {
+      A: "mau memberi contoh dan menjadi contoh",
+      B: "mampu memberi contoh dan menjadi contoh",
+      C: "kadang-kadang memberi contoh dan menjadi contoh",
+      D: "sering memberi contoh dan menjadi contoh"
+    }
+  },
+  {
+    id: 48,
+    text: "Pembelajaran di kelas I sampai dengan kelas III dilaksanakan melalui pendekatan....",
+    options: { A: "tematik", B: "mata pelajaran", C: "satuan pendidikan", D: "jenjang pendidikan" }
+  },
+  {
+    id: 49,
+    text: "Model pembelajaran portofolio diadopsi dari model pembelajaran yang bernama....",
+    options: {
+      A: "portofolio model of learning",
+      B: "we the people project citizen",
+      C: "learning for democratic teaching models",
+      D: "we the model of democratic teaching"
+    }
+  },
+  {
+    id: 50,
+    text: "Arti yang tepat dari konsep apatisme, adalah....",
+    options: {
+      A: "tidak punya minat atau perhatian terhadap orang lain, situasi maupun gejala",
+      B: "perasaan yang menghayati tindakan dan motif orang lain dengan kecurigaan",
+      C: "perasaan keterasingan seseorang dari politik",
+      D: "perasaan kehilangan nilai dan ketiadaan arah"
+    }
+  }
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let state = {
+  name: '', nim: '',
+  questions: [],   // shuffled order: array of soal objects
+  answers: {},     // { index: 'A'/'B'/'C'/'D' }
+  current: 0,
+  timer: null,
+  secondsLeft: 120 * 60,
+  finished: false
+};
+
+// ══════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+
+// ══════════════════════════════════════════
+// START EXAM
+// ══════════════════════════════════════════
+function startExam() {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) {
+    alert('Harap masukkan nama lengkap peserta terlebih dahulu.');
+    document.getElementById('inp-name').focus();
+    return;
+  }
+  state.name = name;
+  state.nim  = document.getElementById('inp-nim').value.trim() || '—';
+  state.questions = [...SOAL_BANK];
+  state.answers = {};
+  state.current = 0;
+  state.secondsLeft = 120 * 60;
+  state.finished = false;
+
+  // UI
+  document.getElementById('av-name').textContent = name;
+  document.getElementById('av-init').textContent = name.charAt(0).toUpperCase();
+
+  buildNavGrid();
+  renderQuestion();
+  startTimer();
+  showScreen('exam');
+  saveToStorage();
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  clearInterval(state.timer);
+  updateTimerDisplay();
+  state.timer = setInterval(() => {
+    state.secondsLeft--;
+    updateTimerDisplay();
+    if (state.secondsLeft <= 0) {
+      clearInterval(state.timer);
+      autoFinish();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el   = document.getElementById('timer-display');
+  const text = document.getElementById('timer-text');
+  text.textContent = formatTime(state.secondsLeft);
+  el.className = 'timer-box';
+  if (state.secondsLeft <= 300) el.classList.add('danger');
+  else if (state.secondsLeft <= 600) el.classList.add('warning');
+}
+
+function autoFinish() {
+  state.finished = true;
+  showResults();
+}
+
+// ══════════════════════════════════════════
+// NAV GRID
+// ══════════════════════════════════════════
+function buildNavGrid() {
+  const grid = document.getElementById('nav-grid');
+  grid.innerHTML = '';
+  state.questions.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.id = 'nav-' + i;
+    btn.textContent = i + 1;
+    btn.onclick = () => goToQuestion(i);
+    grid.appendChild(btn);
+  });
+  updateNavGrid();
+}
+
+function updateNavGrid() {
+  const total = state.questions.length;
+  let cnt = 0;
+  for (let i = 0; i < total; i++) {
+    const btn = document.getElementById('nav-' + i);
+    if (!btn) continue;
+    btn.className = 'nav-btn';
+    if (state.answers[i] !== undefined) { btn.classList.add('answered'); cnt++; }
+    if (i === state.current) btn.classList.add('current');
+  }
+  document.getElementById('answered-count').textContent = cnt;
+  document.getElementById('q-answered-count').textContent = cnt + ' dijawab';
+  const pct = Math.round((cnt / total) * 100);
+  document.getElementById('q-progress-fill').style.width = Math.max(pct, 2) + '%';
+}
+
+// ══════════════════════════════════════════
+// RENDER QUESTION
+// ══════════════════════════════════════════
+function renderQuestion() {
+  const q   = state.questions[state.current];
+  const idx = state.current;
+  const total = state.questions.length;
+
+  document.getElementById('q-counter').textContent = `Soal ${idx+1} / ${total}`;
+  document.getElementById('q-text').innerHTML =
+    `<span class="q-number">Soal ${idx+1}.</span> ${q.text}`;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+
+  const saved = state.answers[idx];
+  Object.entries(q.options).forEach(([key, val]) => {
+    const label = document.createElement('label');
+    label.className = 'option-label' + (saved === key ? ' selected' : '');
+
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'opt';
+    radio.value = key;
+    if (saved === key) radio.checked = true;
+    radio.addEventListener('change', () => selectAnswer(key));
+
+    const keyBadge = document.createElement('div');
+    keyBadge.className = 'option-key';
+    keyBadge.textContent = key;
+
+    const text = document.createElement('div');
+    text.className = 'option-text';
+    text.textContent = val;
+
+    label.appendChild(radio);
+    label.appendChild(keyBadge);
+    label.appendChild(text);
+    label.addEventListener('click', () => selectAnswer(key));
+    container.appendChild(label);
+  });
+
+  // Prev/Next buttons
+  document.getElementById('btn-prev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  const btnNext = document.getElementById('btn-next');
+  if (idx === total - 1) {
+    btnNext.innerHTML = 'Selesai Ujian <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    btnNext.onclick = confirmFinish;
+    btnNext.className = 'btn btn-danger';
+  } else {
+    btnNext.innerHTML = 'Berikutnya <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.onclick = nextQuestion;
+    btnNext.className = 'btn btn-primary';
+  }
+
+  updateNavGrid();
+}
+
+function selectAnswer(key) {
+  state.answers[state.current] = key;
+  renderQuestion();
+  saveToStorage();
+}
+
+function goToQuestion(i) {
+  state.current = i;
+  renderQuestion();
+}
+
+function prevQuestion() {
+  if (state.current > 0) { state.current--; renderQuestion(); }
+}
+
+function nextQuestion() {
+  if (state.current < state.questions.length - 1) { state.current++; renderQuestion(); }
+}
+
+// ══════════════════════════════════════════
+// CONFIRM / FINISH
+// ══════════════════════════════════════════
+function confirmFinish() {
+  const answered = Object.keys(state.answers).length;
+  const unanswered = state.questions.length - answered;
+  const txt = unanswered > 0
+    ? `Masih ada <strong>${unanswered} soal</strong> yang belum dijawab. Yakin ingin menyelesaikan ujian?`
+    : 'Semua soal telah dijawab. Yakin ingin menyelesaikan ujian?';
+  document.getElementById('modal-body-text').innerHTML = txt;
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-confirm').classList.remove('open');
+}
+
+function finishExam() {
+  closeModal();
+  clearInterval(state.timer);
+  state.finished = true;
+  showResults();
+}
+
+// ══════════════════════════════════════════
+// SHOW RESULTS
+// ══════════════════════════════════════════
+function showResults() {
+  let correct = 0, wrong = 0, skipped = 0;
+  const reviewHTML = [];
+
+  state.questions.forEach((q, i) => {
+    const userAns  = state.answers[i];
+    const rightAns = KUNCI_JAWABAN[q.id];
+
+    let cls, icon;
+    if (!userAns) {
+      skipped++;
+      cls  = 'skipped';
+      icon = '—';
+    } else if (userAns === rightAns) {
+      correct++;
+      cls  = 'correct';
+      icon = '✓';
+    } else {
+      wrong++;
+      cls  = 'wrong';
+      icon = '✗';
+    }
+
+    const userLabel  = userAns  ? `${userAns}. ${q.options[userAns]}` : 'Tidak dijawab';
+    const rightLabel = rightAns ? `${rightAns}. ${q.options[rightAns] || '(lihat kunci)'}` : '(belum ada kunci)';
+
+    reviewHTML.push(`
+      <div class="review-item ${cls}">
+        <div class="ri-num">${icon} ${i+1}</div>
+        <div>
+          <div class="ri-q">${q.text.substring(0,120)}${q.text.length>120?'…':''}</div>
+          <div class="ri-ans">Jawaban Anda: <strong>${userLabel}</strong>${cls!=='correct' ? ` · Kunci: <strong>${rightLabel}</strong>` : ''}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  const total  = state.questions.length;
+  const score  = Math.round((correct / total) * 100);
+  const pct    = score;
+  const lulus  = score >= 60;
+
+  // Update DOM
+  document.getElementById('res-name').textContent = state.name;
+  document.getElementById('res-nim').textContent  = state.nim !== '—' ? `NIM: ${state.nim}` : 'PKN SD · SPGK4203';
+  document.getElementById('res-date').textContent = new Date().toLocaleString('id-ID', { dateStyle:'full', timeStyle:'short' });
+  document.getElementById('res-score-val').textContent = score;
+  document.getElementById('score-circle').style.setProperty('--pct', pct);
+
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent   = wrong;
+  document.getElementById('res-skipped').textContent  = skipped;
+
+  const statusEl = document.getElementById('res-status');
+  if (lulus) {
+    statusEl.textContent = `🎉 Selamat! Anda LULUS dengan nilai ${score} (≥60)`;
+    statusEl.className = 'result-status lulus';
+  } else {
+    statusEl.textContent = `😔 Belum Lulus. Nilai Anda ${score} (di bawah 60)`;
+    statusEl.className = 'result-status gagal';
+  }
+
+  setTimeout(() => {
+    document.getElementById('pct-bar').style.width = pct + '%';
+    document.getElementById('pct-text').textContent = pct + '%';
+  }, 300);
+
+  document.getElementById('review-list').innerHTML = reviewHTML.join('');
+
+  // Save
+  const resultData = { name: state.name, nim: state.nim, score, correct, wrong, skipped, date: new Date().toISOString() };
+  localStorage.setItem('pkn_last_result', JSON.stringify(resultData));
+
+  showScreen('result');
+}
+
+// ══════════════════════════════════════════
+// RETAKE
+// ══════════════════════════════════════════
+function retakeExam() {
+  document.getElementById('inp-name').value = state.name;
+  document.getElementById('inp-nim').value  = state.nim !== '—' ? state.nim : '';
+  clearInterval(state.timer);
+  showScreen('login');
+}
+
+// ══════════════════════════════════════════
+// LOCAL STORAGE
+// ══════════════════════════════════════════
+function saveToStorage() {
+  localStorage.setItem('pkn_exam_state', JSON.stringify({
+    name:    state.name,
+    nim:     state.nim,
+    answers: state.answers,
+    questionIds: state.questions.map(q => q.id),
+    current: state.current,
+    secondsLeft: state.secondsLeft
+  }));
+}
+
+// Auto-close modal on overlay click
+document.getElementById('modal-confirm').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Allow Enter to start
+document.getElementById('inp-nim').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startExam();
+});
+document.getElementById('inp-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startExam();
+});
+</script>
+</body>
+</html>
